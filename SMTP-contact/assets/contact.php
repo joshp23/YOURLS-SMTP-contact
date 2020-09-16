@@ -3,7 +3,7 @@
 Plugin Name: SMTP Contact | Helper File
 Plugin URI: https://github.com/joshp23/YOURLS-SMTP-Contact
 Description: Enables Contact Page using PHPMailer
-Version: 0.2.1
+Version: 1.0.0
 Author: Josh Panter
 Author URI: https://unfettered.net
 */
@@ -23,6 +23,7 @@ if( !defined( 'YOURLS_ABSPATH' ) ) {
 	die();
 }
 // Resume normal functions
+$icon = "assets/img/0eq2.fav.ico";
 if ( isset( $_POST['submit'] ) ) {
 
 	// First, check BotBox
@@ -34,7 +35,6 @@ if ( isset( $_POST['submit'] ) ) {
 		$result='<div class="alert alert-success">Your message was sent. Have a nice day.</div>';
 	
 	} else {
-
 		// Check if name has been entered
 		if( isset( $_POST['name'] ) && $_POST['name'] !== '' ) {
 			$vars['from_name'] = $_POST['name'];
@@ -73,15 +73,16 @@ if ( isset( $_POST['submit'] ) ) {
 
 	// If there are no errors, send the email
 	if (($_POST['botbox'] == '0') && !$errName && !$errEmail && !$errMessage && !$errHuman ) {
-		$vars['to_name'] 	= YOURLS_SMTP_CONTACT_RECIPIENT_NAME;
-		$vars['to_address']	= YOURLS_SMTP_CONTACT_RECIPIENT_ADDRESS;
-		$vars['subject'] 	= YOURLS_SMTP_CONTACT_EMAIL_SUBJECT;
+		$vars['to_name'] 	= yourls_get_option( 'ysc_recipient_name' );
+		$vars['to_address']	= yourls_get_option( 'ysc_recipient_addr' );
+		$vars['subject'] 	= yourls_get_option( 'ysc_subject' );
 
 		$send = ysc_send ($vars);
 		if ( $send === 200 )
 			$result='<div class="alert alert-success">Your message was sent. Please <a href="/">click here</a> to return to the home page.</div>';
 		else 
 			$result = '<div class="alert alert-danger">'.$send.' Please try again later. <a href="/">Click here</a> to return to the home page.</div>';
+
 	}
 }
 ?>
@@ -91,7 +92,7 @@ if ( isset( $_POST['submit'] ) ) {
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Contactu Us</title>
+    <title>Contact Us</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/spacelab/bootstrap.min.css">
     <style> .honeypot { display:none;} </style>
   </head>
