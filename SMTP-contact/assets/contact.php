@@ -3,7 +3,7 @@
 Plugin Name: SMTP Contact | Helper File
 Plugin URI: https://github.com/joshp23/YOURLS-SMTP-Contact
 Description: Enables Contact Page using PHPMailer
-Version: 0.1.0
+Version: 0.2.0
 Author: Josh Panter
 Author URI: https://unfettered.net
 */
@@ -25,11 +25,14 @@ if( !defined( 'YOURLS_ABSPATH' ) ) {
 // Resume normal functions
 if ( isset( $_POST['submit'] ) ) {
 
-	// First, check BotBox trap
+	// First, check BotBox
 	if ($_POST['botbox'] == '1') {
-	
-		$result='<div class="alert alert-danger">Please try again without checkign the box, or <a href="/">click here</a> to return to the home page.</div>';
+		$result='<div class="alert alert-danger">Please try again without checking the box, or <a href="/">click here</a> to return to the home page.</div>';
 		
+	// Next, check Honeypot
+	} elseif ( isset( $_POST['url'] ) && $_POST['url'] !== '' ) {
+		$result='<div class="alert alert-success">Your message was sent. Have a nice day.</div>';
+	
 	} else {
 
 		// Check if name has been entered
@@ -59,8 +62,8 @@ if ( isset( $_POST['submit'] ) ) {
 
 		//Check if captcha is correct
 		$x 	= $_POST['human'];
-		$a 	= $_POST['firstNumber'];
-		$b 	= $_POST['secondNumber'];
+		$a 	= $_POST['a'];
+		$b 	= $_POST['b'];
 		$c 	= $a + $b;
 		if ($x == $c)
 			$errHuman = null; 
@@ -75,7 +78,7 @@ if ( isset( $_POST['submit'] ) ) {
 		$vars['subject'] 	= YOURLS_SMTP_CONTACT_EMAIL_SUBJECT;
 
 		if ( ysc_send ($vars) === 200 )
-			$result='<div class="alert alert-success">Thank You! I will be in touch. Please <a href="/">click here</a> to return to the home page.</div>';
+			$result='<div class="alert alert-success">Your message was sent. Please <a href="/">click here</a> to return to the home page.</div>';
 		else 
 			$esult = '<div class="alert alert-danger">Sorry there was an error sending your message. Please try again later. <a href="/">Click here</a> to return to the home page.</div>';	
 	}
@@ -89,6 +92,7 @@ if ( isset( $_POST['submit'] ) ) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Contactu Us</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/spacelab/bootstrap.min.css">
+    <style> .honeypot { display:none;} </style>
   </head>
   <body>
   	<div class="container">
@@ -97,6 +101,7 @@ if ( isset( $_POST['submit'] ) ) {
 			  	<div style="padding:0px 5px;"class="panel panel-default">
   				<h1 class="page-header text-center">Contact Us</h1>
 				<form class="form-horizontal" role="form" method="post" action="">
+				
 					<div class="form-group<?php echo (isset($errName) ? (' has-error') : null); ?>">
 						<label for="name" class="col-sm-2 control-label">Name</label>
 						<div class="col-sm-10">
@@ -104,6 +109,7 @@ if ( isset( $_POST['submit'] ) ) {
 							<?php echo (isset($errName) ? ("<p class='text-danger'> $errName</p>") : null);?>
 						</div>
 					</div>
+
 					<div class="form-group<?php echo (isset($errEmail) ? (' has-error') : null); ?>">
 						<label for="email" class="col-sm-2 control-label">Email</label>
 						<div class="col-sm-10">
@@ -111,6 +117,14 @@ if ( isset( $_POST['submit'] ) ) {
 							<?php echo (isset($errEmail) ? ("<p class='text-danger'> $errEmail</p>") : null);?>
 						</div>
 					</div>
+					
+					<div class="form-group honeypot">
+						<label for="url" class="col-sm-2 control-label">URL</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="url" name="url">
+						</div>
+					</div>
+					
 					<div class="form-group<?php echo (isset($errMessage) ? (' has-error') : null); ?>">
 						<label for="message" class="col-sm-2 control-label">Message</label>
 						<div class="col-sm-10">
@@ -118,20 +132,25 @@ if ( isset( $_POST['submit'] ) ) {
 							<?php echo (isset($errMessage) ? ("<p class='text-danger'> $errMessage</p>") : null);?>
 						</div>
 					</div>
+					
 					<div class="form-group<?php echo (isset($errHuman) ? (' has-error') : null); ?>">
-						<label for="human" class="col-sm-2 control-label"><?php 
-							$min_number = 0;
-							$max_number = 15;
-							$random_number1 = mt_rand($min_number, $max_number);
-							$random_number2 = mt_rand($min_number, $max_number);
-							echo $random_number1 . ' + ' . $random_number2 . ' = '; ?></label>
+						<label for="human" class="col-sm-2 control-label">
+							<?php 
+								$min = 0;
+								$max = 15;
+								$rand1 = mt_rand($min, $max);
+								$rand2 = mt_rand($min, $max);
+								echo $rand1 . ' + ' . $rand2 . ' = ';
+							?>
+						</label>
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="human" name="human" placeholder="Your Answer">
-							<input name="firstNumber" type="hidden" value="<?php echo $random_number1; ?>" />
-							<input name="secondNumber" type="hidden" value="<?php echo $random_number2; ?>" />
+							<input name="a" type="hidden" value="<?php echo $rand1; ?>" />
+							<input name="b" type="hidden" value="<?php echo $rand2; ?>" />
 							<?php echo (isset($errHuman) ? ("<p class='text-danger'> $errHuman</p>") : null);?>
 						</div>
 					</div>
+					
 					<div class="form-group">
 						<div class="col-sm-10 col-sm-offset-2">
 							<div class="checkbox">
@@ -144,11 +163,13 @@ if ( isset( $_POST['submit'] ) ) {
 							<button type="reset" class="btn btn-default">Cancel</button>
 						</div>
 					</div>
+
 					<div class="form-group">
 						<div class="col-sm-10 col-sm-offset-2">
 							<?php echo (isset($result) ? $result : null); ?>	
 						</div>
 					</div>
+					
 				</form> 
 				</div>
 			</div>
@@ -156,5 +177,6 @@ if ( isset( $_POST['submit'] ) ) {
 	</div>   
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+	<?php if((yourls_is_active_plugin('httpBL/plugin.php') && yourls_get_option('httpBL_honeypot'))) print httpbl_link() . "\n"; ?>
   </body>
 </html>
