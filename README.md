@@ -5,6 +5,7 @@ Public contact page for YOURLS using PHPMailer
 - Bootstrap based contact page
 - Simple captcha
 - Integration: Enables SMTP mailing for other plugins
+- Integration: uses [httpbl](https://github.com/joshp23/YOURLS-httpBL) honeypots on the contact page
 
 ### Requirements
 - YOURLS 1.7.9
