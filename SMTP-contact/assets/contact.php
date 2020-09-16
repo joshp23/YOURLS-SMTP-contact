@@ -3,7 +3,7 @@
 Plugin Name: SMTP Contact | Helper File
 Plugin URI: https://github.com/joshp23/YOURLS-SMTP-Contact
 Description: Enables Contact Page using PHPMailer
-Version: 0.2.0
+Version: 0.2.1
 Author: Josh Panter
 Author URI: https://unfettered.net
 */
@@ -77,10 +77,11 @@ if ( isset( $_POST['submit'] ) ) {
 		$vars['to_address']	= YOURLS_SMTP_CONTACT_RECIPIENT_ADDRESS;
 		$vars['subject'] 	= YOURLS_SMTP_CONTACT_EMAIL_SUBJECT;
 
-		if ( ysc_send ($vars) === 200 )
+		$send = ysc_send ($vars);
+		if ( $send === 200 )
 			$result='<div class="alert alert-success">Your message was sent. Please <a href="/">click here</a> to return to the home page.</div>';
 		else 
-			$esult = '<div class="alert alert-danger">Sorry there was an error sending your message. Please try again later. <a href="/">Click here</a> to return to the home page.</div>';	
+			$result = '<div class="alert alert-danger">'.$send.' Please try again later. <a href="/">Click here</a> to return to the home page.</div>';
 	}
 }
 ?>

@@ -3,7 +3,7 @@
 Plugin Name: SMTP Contact
 Plugin URI: https://github.com/joshp23/YOURLS-SMTP-Contact
 Description: Enables Contact Page using PHPMailer
-Version: 0.2.0
+Version: 0.2.1
 Author: Josh Panter
 Author URI: https://unfettered.net
 */
@@ -94,7 +94,7 @@ function ysc_send ( $vars ) {
 		return 200;
 
 	} catch (Exception $e) {
-		return "Message could not be sent. Mailer Error: ".$phpmailer->ErrorInfo;
+		return "Message could not be sent. ".$phpmailer->ErrorInfo;
 	}
 }
 // Copy/update contact.php when activated
