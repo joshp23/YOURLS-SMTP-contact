@@ -3,7 +3,7 @@
 Plugin Name: SMTP Contact | Helper File
 Plugin URI: https://github.com/joshp23/YOURLS-SMTP-Contact
 Description: Enables Contact Page using PHPMailer
-Version: 1.0.0
+Version: 1.1.0
 Author: Josh Panter
 Author URI: https://unfettered.net
 */
@@ -23,7 +23,6 @@ if( !defined( 'YOURLS_ABSPATH' ) ) {
 	die();
 }
 // Resume normal functions
-$icon = "assets/img/0eq2.fav.ico";
 if ( isset( $_POST['submit'] ) ) {
 
 	// First, check BotBox
@@ -55,7 +54,13 @@ if ( isset( $_POST['submit'] ) ) {
 		//Check if message has been entered
 		if( isset( $_POST['message'] ) && $_POST['message'] !== '' ) {
 			$vars['message'] = $_POST['message'];
-			$errMessage = null;
+			// check for links
+			$regEx = '~[a-z]+://\S+~';
+			if( preg_match( $regEx, $vars['message'] ) ) {
+				$errMessage = 'Please remove links from your message';
+			} else {
+				$errMessage = null;
+			}
 		} else { 
 			$errMessage = 'Please enter your message';
 		}
