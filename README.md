@@ -24,6 +24,9 @@ Public contact page for YOURLS using PHPMailer
 ### In Development
 - Alternate contact page styles
 
+### Tips
+Dogecoin: DARhgg9q3HAWYZuN95DKnFonADrSWUimy3
+
 License
 -------
 Copyright 2020 Joshua Panter 
